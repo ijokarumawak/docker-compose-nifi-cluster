@@ -56,8 +56,10 @@ $ docker-machine ip default
 The ncm container exports port 8080 through port 8080 on the docker host, so you can access NiFi cluster via:
 
 ```
-http://192.168.99.100/nifi
+http://192.168.99.100:8080/nifi
 ```
+
+![connected-node](https://raw.githubusercontent.com/ijokarumawak/docker-compose-nifi-cluster/master/images/connected-nodes.jpg)
 
 ### Open the cluster from a browser using private IP address
 
