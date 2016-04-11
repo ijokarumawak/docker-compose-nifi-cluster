@@ -1,0 +1,14 @@
+version: '2'
+services:
+  ncm.nifi:
+    build: ./ncm
+    ports:
+      - "8080:8080"
+  node1.nifi:
+    build: ./node1
+    depends_on:
+     - ncm.nifi
+  node2.nifi:
+    build: ./node2
+    depends_on:
+     - ncm.nifi

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+NODE=$1
+
+if [ -z $NODE ]; then
+  echo "usage: tail-nifi-app-log <node>"
+  exit 1;
+fi
+
+docker exec -it dockercomposenificluster_$NODE.nifi_1 tail -f logs/nifi-app.log
+
