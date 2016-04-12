@@ -1,6 +1,34 @@
 # docker-compose-nifi-cluster
 A Docker Compose files to compose a NiFi cluster on Docker.
 
+## How it looks like
+
+```
+                  +--------------------------------+
+                  |                                |
+                  | ncm (nifi-cluster-manager)     |
+                  |                                |
+                  |  8080: nifi HTTP port          |
+ +------------------>19181: unicast manager port   |
+ |                |                                |
+Join cluster      +--------------------------------+
+ |                |                                |
+ +----------------+ node1                          |
+ |                |                                |
+ |                |   Embedded ZK server           |
+ |          +---------->2181: zk client port       |
+ | Cluser State   |                                |
+ |          +-------+Processors                    |
+ |          |     |                                |
+ |          |     +--------------------------------+
+ |          |     |                                |
+ +----------------+ node2                          |
+            |     |                                |
+            +-------+Processors                    |
+                  |                                |
+                  +--------------------------------+
+```
+
 ## How to use
 
 1. Install docker and docker-compose if you don't have.
