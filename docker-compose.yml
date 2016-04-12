@@ -7,8 +7,8 @@ services:
   node1.nifi:
     build: ./node1
     depends_on:
-     - ncm.nifi
+      - ncm.nifi
   node2.nifi:
     build: ./node2
     depends_on:
-     - ncm.nifi
+      - ncm.nifi

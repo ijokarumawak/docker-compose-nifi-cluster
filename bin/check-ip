@@ -1,0 +1,11 @@
+#!/bin/sh
+
+NODE=$1
+
+if [ -z $NODE ]; then
+  echo "usage: check-ip <node>"
+  exit 1;
+fi
+
+docker inspect -f '{{.NetworkSettings.Networks.dockercomposenificluster_default.IPAddress}}' dockercomposenificluster_$NODE.nifi_1 
+

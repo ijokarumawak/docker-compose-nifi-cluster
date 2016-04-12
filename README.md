@@ -40,6 +40,13 @@ A Docker Compose files to compose a NiFi cluster on Docker.
     $ docker-compose start
     ```
 
+- To login (attach a shell) a container
+
+    ```
+    $ ./bin/attach node1
+    ```
+
+
 ### Open the cluster from a browser
 
 In order to access NiFi UI from a browser, first you need to figure out what IP address the NiFi Cluster Manager (ncm) is running on.
@@ -83,4 +90,14 @@ Then you can access the ncm container from a browser by:
 
 ```
 http://172.18.0.2:8080/nifi
+```
+
+### How to update compose definition
+
+When you update/pull the latest compose definition, it is recommended to rebuild services by running:
+
+```
+$ docker-compose down
+$ docker-compose build
+$ docker-compose up -d
 ```

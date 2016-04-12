@@ -1,3 +1,3 @@
 FROM mkobit/nifi
-COPY ./nifi.properties /opt/nifi/conf/
+COPY ./nifi.properties ./state-management.xml ./zookeeper.properties /opt/nifi/conf/
 
