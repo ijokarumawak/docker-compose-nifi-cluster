@@ -1,14 +1,24 @@
 version: '2'
 services:
-  ncm.nifi:
-    build: ./ncm
+  zoo1:
+    image: zookeeper
+    restart: always
     ports:
-      - "8080:8080"
-  node1.nifi:
-    build: ./node1
+      - 2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zoo1:2888:3888
+
+  nifi-seed:
+    container_name: nifi-cluster-seed
+    build: ./nifi-node
+    image: nifi-node:1.0.0
+    ports:
+      - "8080-8082:8080-8082"
     depends_on:
-      - ncm.nifi
-  node2.nifi:
-    build: ./node2
+      - zoo1
+
+  nifi-nodes:
+    image: nifi-node:1.0.0
     depends_on:
-      - ncm.nifi
+      - nifi-seed

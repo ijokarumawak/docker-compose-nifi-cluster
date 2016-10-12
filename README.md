@@ -1,131 +1,61 @@
 # docker-compose-nifi-cluster
 A Docker Compose files to compose a NiFi cluster on Docker.
 
-## How it looks like
+The master branch uses the latest NiFi version (1.0).
+For older version, use following branches:
+
+- [0.x](https://github.com/ijokarumawak/docker-compose-nifi-cluster/tree/0.x): NCM and 2 nodes cluster.
+
+## Prerequisite
+
+You need docker, docker-machine and docker-compose. For example, in my environment I have these versions.
 
 ```
-                  +--------------------------------+
-                  |                                |
-                  | ncm (nifi-cluster-manager)     |
-                  |                                |
-                  |  8080: nifi HTTP port          |
- +------------------>19181: unicast manager port   |
- |                |                                |
-Join cluster      +--------------------------------+
- |                |                                |
- +----------------+ node1                          |
- |                |                                |
- |                |   Embedded ZK server           |
- |          +---------->2181: zk client port       |
- | Cluser State   |                                |
- |          +-------+Processors                    |
- |          |     |                                |
- |          |     +--------------------------------+
- |          |     |                                |
- +----------------+ node2                          |
-            |     |                                |
-            +-------+Processors                    |
-                  |                                |
-                  +--------------------------------+
+$ docker -v
+Docker version 1.12.1, build 6f9534c
+
+$ docker-machine -v
+docker-machine version 0.8.1, build 41b3b25
+
+$ docker-compose -v
+docker-compose version 1.8.0, build f3628c7
 ```
 
 ## How to use
 
-1. Install docker and docker-compose if you don't have.
-1. Clone this project.
-1. Start NiFi cluster by running:
-
-    ```
-    $ cd docker-compose-nifi-cluster
-    $ docker-compose up -d
-    ```
-
-- Check containers status:
-
-    ```
-    $ docker-compose ps
-    ```
-
-- Check logs to see if it's ready:
-
-    ```
-    $ docker exec -it dockercomposenificluster_ncm.nifi_1 tail -f logs/nifi-app.log
-    or
-    $ ./bin/tail-nifi-app-log ncm
-    ```
-
-    If you see following logs, then NiFi is ready to handle request:
-    ```
-    2016-04-11 08:39:47,288 INFO [main] org.eclipse.jetty.server.Server Started @75413ms
-    2016-04-11 08:39:48,362 INFO [main] org.apache.nifi.web.server.JettyServer NiFi has started. The UI is available at the following URLs:
-    2016-04-11 08:39:48,362 INFO [main] org.apache.nifi.web.server.JettyServer http://ncm.nifi:8080/nifi
-    ```
-
-- To stop/start the cluster
-
-    ```
-    $ docker-compose stop
-    $ docker-compose start
-    ```
-
-- To login (attach a shell) a container
-
-    ```
-    $ ./bin/attach node1
-    ```
-
-
-### Open the cluster from a browser
-
-In order to access NiFi UI from a browser, first you need to figure out what IP address the NiFi Cluster Manager (ncm) is running on.
-
-For those who are using Docker on Mac like me, the containers are running on a virtual machine which is created by `docker-machine`.
-
-You can find IP address of 'default' docker machine:
-
 ```
-$ docker-machine ip default
-192.168.99.100
-```
-
-The ncm container exports port 8080 through port 8080 on the docker host, so you can access NiFi cluster via:
-
-```
-http://192.168.99.100:8080/nifi
-```
-
-![connected-node](https://raw.githubusercontent.com/ijokarumawak/docker-compose-nifi-cluster/master/images/connected-nodes.jpg)
-
-### Open the cluster from a browser using private IP address
-
-Since this docker compose configuration doesn't have specific network configuration, it uses 'default' network.
-You can find IP address of ncm container by:
-
-```
-$ docker inspect -f '{{.NetworkSettings.Networks.dockercomposenificluster_default.IPAddress}}' dockercomposenificluster_ncm.nifi_1
-172.18.0.2
-```
-
-In my case, ncm is running on `172.18.0.2`, the network is a private network which exists inside the `default` docker machine.
-If you'd like to access the container with its private IP address, then you need to add route setting.
-To do so, execute following command:
-
-```
-$ sudo route add -net 172.18.0.0 `docker-machine ip default`
-```
-
-Then you can access the ncm container from a browser by: 
-
-```
-http://172.18.0.2:8080/nifi
-```
-
-### How to update compose definition
-
-When you update/pull the latest compose definition, it is recommended to rebuild services by running:
-
-```
-$ docker-compose down
-$ docker-compose build
+# To start nifi cluster
 $ docker-compose up -d
+
+# Wait few minutes for NiFi to unpack nars and the nodes recognized eachother.
+# Then access to the seed node's url through docker-machine vm
+$ docker-machine ip
+192.168.99.100
+
+http://192.168.99.100:8080/nifi/
+
+# You may need to add routing by a command something like this:
+$ sudo route add -net 172.17.0.0 `docker-machine ip`
+
+# View logs or container status
+$ docker-compose logs -f
+$ docker exec nifi-cluster-seed tail -f logs/nifi-app.log
+$ docker-compose ps
+
+# Scale number of nodes (seed + n)
+$ docker-compose scale nifi-nodes=2
+
+# Dispose the cluster
+$ docker-compose down
+
+# To rebuild nifi-node docker image
+$ docker-compose build
 ```
+
+## Special thanks
+
+I used [mkobit/nifi](https://github.com/mkobit/docker-nifi) as a base image. Thanks for sharing the image and maintaining it up to date!
+
+## Screen shot
+
+![connected-node](https://raw.githubusercontent.com/ijokarumawak/docker-compose-nifi-cluster/master/images/connected-nodes.png)
