@@ -10,7 +10,7 @@ For older version, use following branches:
 
 You need docker, docker-machine and docker-compose. For example, in my environment I have these versions.
 
-```
+```Shell
 $ docker -v
 Docker version 1.12.1, build 6f9534c
 
@@ -23,7 +23,11 @@ docker-compose version 1.8.0, build f3628c7
 
 ## How to use
 
-```
+```Shell
+# Clone this repository
+$ git@github.com:ijokarumawak/docker-compose-nifi-cluster.git
+$ cd docker-compose-nifi-cluster
+
 # To start nifi cluster
 $ docker-compose up -d
 
