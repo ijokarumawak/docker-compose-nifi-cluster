@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for nifi_container in $(docker ps |grep nifi-node |awk '{print $1}')
+do
+  docker restart $nifi_container
+done

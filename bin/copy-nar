@@ -1,0 +1,14 @@
+#!/bin/sh
+
+nar_file=$1
+
+if [ -z $nar_file ]
+then
+  echo "copy-nar <nar_file_path>"
+  exit 1
+fi
+
+for nifi_container in $(docker ps |grep nifi-node |awk '{print $1}')
+do
+  docker cp $nar_file $nifi_container:/opt/nifi/lib/
+done

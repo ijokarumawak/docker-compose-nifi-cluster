@@ -9,16 +9,22 @@ services:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zoo1:2888:3888
 
-  nifi-seed:
-    container_name: nifi-cluster-seed
+  nifi-nodes:
     build: ./nifi-node
     image: nifi-node:1.0.0
-    ports:
-      - "8080-8082:8080-8082"
     depends_on:
       - zoo1
+    environment:
+      - EXCLUDE_PORTS=8081,8082
+      # Used by ListenTCP or other processors. Depends on the data flow.
+      - TCP_PORTS=9001
 
-  nifi-nodes:
-    image: nifi-node:1.0.0
-    depends_on:
-      - nifi-seed
+  lb:
+    image: dockercloud/haproxy
+    links:
+      - nifi-nodes
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "9001:9001"
